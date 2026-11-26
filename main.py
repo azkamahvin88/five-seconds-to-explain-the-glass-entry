@@ -49,6 +49,15 @@ def main() -> None:
     # characters, and reject any sentence-ending punctuation followed by more
     # text (". ", "! ", "? ") inside the line, so the sentence cannot
     # accidentally be two sentences.
+    # The brief also bans two things outright — any apology and any
+    # admission of fault — so enforce them in code: a later edit to LINE
+    # that smuggles in "sorry" or "my fault" must fail loudly here instead
+    # of silently submitting a disqualified line.
+    lower = LINE.lower()
+    for banned in ("sorry", "apolog", "my fault", "my bad", "forgive me",
+                   "didn't mean"):
+        if banned in lower:
+            raise ValueError(f"entry must contain no apology or admission: {banned!r}")
     for ch in LINE:
         if ord(ch) < 32 or ord(ch) == 127:
             raise ValueError("entry must not contain control characters")
